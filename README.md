@@ -6,7 +6,7 @@ This project gives a full native java example of:
    * Call the MyJohnDeere APIs with your access token
    
 ## Requirements
-* Java 17
+* Java 21 (LTS)
 * A free port 9090 (you can change this)
    
 ## How to start this project
@@ -18,6 +18,23 @@ This project gives a full native java example of:
     * ```java -jar target/oauth2-example-1.0.jar```
     * you may also use the ```start.sh``` shell script.
 * Open a browser and go to http://localhost:9090
+
+## Testing
+
+This project includes comprehensive unit tests with JaCoCo code coverage reporting.
+
+### Running Tests
+```bash
+mvn test
+```
+
+### Viewing Coverage Report
+After running tests, the JaCoCo coverage report is generated at:
+```
+target/site/jacoco/index.html
+```
+
+The project targets a minimum of 80% instruction coverage.
 
 ## Using this project
 * Once in the browser you will need a few things

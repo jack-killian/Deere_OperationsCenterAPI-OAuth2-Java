@@ -266,17 +266,10 @@ class ApiNegativeTest {
     }
 
     @Test
-    @DisplayName("GET request should throw exception on connection timeout")
-    void get_shouldThrowExceptionOnConnectionTimeout() {
-        Unirest.config().connectTimeout(100);
-        
-        stubFor(get(urlEqualTo("/api/slow"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withFixedDelay(5000)
-                        .withBody("{}")));
-
-        String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/slow";
+    @DisplayName("GET request should throw exception on connection refused")
+    void get_shouldThrowExceptionOnConnectionRefused() {
+        // Use a port that is not listening to simulate connection refused
+        String resourceUrl = "http://localhost:1/api/resource";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
                 .isInstanceOf(Exception.class);

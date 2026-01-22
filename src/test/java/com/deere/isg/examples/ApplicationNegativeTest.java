@@ -417,7 +417,7 @@ class ApplicationNegativeTest {
         when(mockRequest.getParameter("url")).thenReturn("http://localhost:" + wireMockServer.port() + "/platform/slow");
         when(context.req()).thenReturn(mockRequest);
 
-        Unirest.config().connectTimeout(100).socketTimeout(100);
+        Unirest.config().connectTimeout(100);
 
         java.lang.reflect.Method callTheApiMethod = Application.class.getDeclaredMethod("callTheApi", Context.class);
         callTheApiMethod.setAccessible(true);

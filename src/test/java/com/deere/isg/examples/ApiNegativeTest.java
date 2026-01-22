@@ -267,7 +267,7 @@ class ApiNegativeTest {
     @Test
     @DisplayName("GET request should throw exception on connection timeout")
     void get_shouldThrowExceptionOnConnectionTimeout() {
-        Unirest.config().connectTimeout(100).socketTimeout(100);
+        Unirest.config().connectTimeout(100);
         
         stubFor(get(urlEqualTo("/api/slow"))
                 .willReturn(aResponse()

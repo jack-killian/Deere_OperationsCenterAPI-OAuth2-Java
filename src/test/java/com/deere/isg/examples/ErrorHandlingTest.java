@@ -20,6 +20,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -41,6 +42,7 @@ class ErrorHandlingTest {
         WireMock.configureFor("localhost", wireMockServer.port());
         
         Unirest.config().reset();
+        Unirest.config().interceptor(new LoggingInterceptor());
         
         application = new Application();
         settings = new Settings();
@@ -224,14 +226,10 @@ class ErrorHandlingTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"error\": \"forbidden\"}")));
 
-        Unirest.config().interceptor(new LoggingInterceptor());
-
-        try {
-            Unirest.get("http://localhost:" + wireMockServer.port() + "/api/fail")
-                    .asJson();
-        } catch (RequestException e) {
-            assertThat(e.getMessage()).contains("403");
-        }
+        assertThatThrownBy(() -> Unirest.get("http://localhost:" + wireMockServer.port() + "/api/fail")
+                    .asJson())
+                .hasCauseInstanceOf(RequestException.class)
+                .hasMessageContaining("403");
     }
 
     @Test

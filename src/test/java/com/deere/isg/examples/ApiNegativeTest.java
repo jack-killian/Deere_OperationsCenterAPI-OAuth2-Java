@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("API Client Negative Tests - Error Handling")
 class ApiNegativeTest {
@@ -53,7 +54,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/protected";
         
         assertThatThrownBy(() -> api.get("expired-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("401");
     }
 
@@ -74,7 +75,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/admin";
         
         assertThatThrownBy(() -> api.get("valid-token-no-permission", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("403");
     }
 
@@ -95,7 +96,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/nonexistent";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("404");
     }
 
@@ -117,7 +118,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/rate-limited";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("429");
     }
 
@@ -138,7 +139,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/error";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("500");
     }
 
@@ -159,7 +160,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/gateway";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("502");
     }
 
@@ -180,7 +181,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/unavailable";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("503");
     }
 
@@ -220,7 +221,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/empty-error";
         
         assertThatThrownBy(() -> api.get("valid-token", resourceUrl))
-                .isInstanceOf(RequestException.class)
+                .hasCauseInstanceOf(RequestException.class)
                 .hasMessageContaining("400");
     }
 
@@ -241,7 +242,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/resource";
         
         assertThatThrownBy(() -> api.get(null, resourceUrl))
-                .isInstanceOf(RequestException.class);
+                .hasCauseInstanceOf(RequestException.class);
     }
 
     @Test
@@ -261,7 +262,7 @@ class ApiNegativeTest {
         String resourceUrl = "http://localhost:" + wireMockServer.port() + "/api/resource";
         
         assertThatThrownBy(() -> api.get("", resourceUrl))
-                .isInstanceOf(RequestException.class);
+                .hasCauseInstanceOf(RequestException.class);
     }
 
     @Test

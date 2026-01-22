@@ -169,8 +169,8 @@ class ApplicationNegativeTest {
     }
 
     @Test
-    @DisplayName("Token refresh should handle expired refresh token")
-    void refreshAccessToken_shouldHandleExpiredRefreshToken() throws Exception {
+    @DisplayName("Token refresh should handle unreachable token endpoint")
+    void refreshAccessToken_shouldHandleUnreachableTokenEndpoint() throws Exception {
         String wellKnownUrl = "http://localhost:" + wireMockServer.port() + "/.well-known/oauth-authorization-server";
         
         stubFor(get(urlEqualTo("/.well-known/oauth-authorization-server"))
@@ -180,27 +180,16 @@ class ApplicationNegativeTest {
                         .withBody("""
                             {
                                 "authorization_endpoint": "http://localhost:%d/oauth2/authorize",
-                                "token_endpoint": "http://localhost:%d/oauth2/token"
+                                "token_endpoint": "http://localhost:99999/oauth2/token"
                             }
-                            """.formatted(wireMockServer.port(), wireMockServer.port()))));
-
-        stubFor(post(urlEqualTo("/oauth2/token"))
-                .willReturn(aResponse()
-                        .withStatus(400)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("""
-                            {
-                                "error": "invalid_grant",
-                                "error_description": "The refresh token has expired"
-                            }
-                            """)));
+                            """.formatted(wireMockServer.port()))));
 
         settings.clientId = "test-client";
         settings.clientSecret = "test-secret";
         settings.wellKnown = wellKnownUrl;
         settings.callbackUrl = "http://localhost:9090/callback";
         settings.scopes = "openid profile";
-        settings.refreshToken = "expired-refresh-token";
+        settings.refreshToken = "some-refresh-token";
 
         java.lang.reflect.Field settingsField = Application.class.getDeclaredField("settings");
         settingsField.setAccessible(true);
@@ -214,8 +203,8 @@ class ApplicationNegativeTest {
     }
 
     @Test
-    @DisplayName("Token refresh should handle revoked refresh token")
-    void refreshAccessToken_shouldHandleRevokedRefreshToken() throws Exception {
+    @DisplayName("Token refresh should handle malformed JSON response")
+    void refreshAccessToken_shouldHandleMalformedJsonResponse() throws Exception {
         String wellKnownUrl = "http://localhost:" + wireMockServer.port() + "/.well-known/oauth-authorization-server";
         
         stubFor(get(urlEqualTo("/.well-known/oauth-authorization-server"))
@@ -231,21 +220,16 @@ class ApplicationNegativeTest {
 
         stubFor(post(urlEqualTo("/oauth2/token"))
                 .willReturn(aResponse()
-                        .withStatus(400)
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("""
-                            {
-                                "error": "invalid_grant",
-                                "error_description": "The refresh token has been revoked"
-                            }
-                            """)));
+                        .withBody("not valid json {")));
 
         settings.clientId = "test-client";
         settings.clientSecret = "test-secret";
         settings.wellKnown = wellKnownUrl;
         settings.callbackUrl = "http://localhost:9090/callback";
         settings.scopes = "openid profile";
-        settings.refreshToken = "revoked-refresh-token";
+        settings.refreshToken = "some-refresh-token";
 
         java.lang.reflect.Field settingsField = Application.class.getDeclaredField("settings");
         settingsField.setAccessible(true);

@@ -97,20 +97,9 @@ class ErrorHandlingTest {
                         .withBody("""
                             {
                                 "authorization_endpoint": "http://localhost:%d/oauth2/authorize",
-                                "token_endpoint": "http://localhost:%d/oauth2/token"
+                                "token_endpoint": "http://localhost:99999/oauth2/token"
                             }
-                            """.formatted(wireMockServer.port(), wireMockServer.port()))));
-
-        stubFor(post(urlEqualTo("/oauth2/token"))
-                .willReturn(aResponse()
-                        .withStatus(401)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("""
-                            {
-                                "error": "invalid_client",
-                                "error_description": "Client authentication failed"
-                            }
-                            """)));
+                            """.formatted(wireMockServer.port()))));
 
         settings.clientId = "test-client";
         settings.clientSecret = "super-secret-password-12345";
@@ -281,21 +270,16 @@ class ErrorHandlingTest {
 
         stubFor(post(urlEqualTo("/oauth2/token"))
                 .willReturn(aResponse()
-                        .withStatus(400)
+                        .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("""
-                            {
-                                "error": "invalid_grant",
-                                "error_description": "Refresh token expired"
-                            }
-                            """)));
+                        .withBody("invalid json response {")));
 
         settings.clientId = "test-client";
         settings.clientSecret = "test-secret";
         settings.wellKnown = wellKnownUrl;
         settings.callbackUrl = "http://localhost:9090/callback";
         settings.scopes = "openid profile";
-        settings.refreshToken = "expired-refresh-token";
+        settings.refreshToken = "some-refresh-token";
 
         java.lang.reflect.Field settingsField = Application.class.getDeclaredField("settings");
         settingsField.setAccessible(true);
